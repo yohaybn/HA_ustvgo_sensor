@@ -1,9 +1,0 @@
-{
-    "domain": "ustvgo",
-    "name": "UsTvGo",
-    "documentation": "https://github.com/danieldotnl/hass-multiscrape",
-    "requirements": ["requests", "tqdm"],
-    "codeowners": ["@yohaybn"],
-    "version": "0.0.1"
-  }
-  
