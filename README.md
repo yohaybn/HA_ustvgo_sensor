@@ -1,5 +1,6 @@
 
 # HA UStvgo sensor
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
 ## description:
 This custom component for watching UStvgo channels via home assistant, broadcasting to google chromecast. 
@@ -7,6 +8,7 @@ This component will create senosr for every channel from UStvgo
 
 ------------
 ## instaltion:
+Using HACS (add [this repo](https://github.com/yohaybn/HA_ustvgo_sensor ) as custome repository) 
 Copy [ustvgo folder](https://github.com/yohaybn/HA_ustvgo_sensor/tree/main/custom-components/ustvgo ) to your custom component folder and restart your HA.  
 add sensor to your configuration.yaml
 <pre><code>-  sensor:
