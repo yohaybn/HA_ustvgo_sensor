@@ -1,18 +1,12 @@
 """Support for ustvgo."""
-import asyncio
+
 import datetime
 from datetime import datetime, timedelta
 import logging
-import socket
-import urllib
-import sys
-from xml.parsers.expat import ExpatError
-import difflib
 
-import aiohttp
 import async_timeout
 import voluptuous as vol
-import xmltodict
+
 
 from homeassistant.components.sensor import ENTITY_ID_FORMAT, PLATFORM_SCHEMA
 from homeassistant.const import (
@@ -30,20 +24,12 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 _LOGGER = logging.getLogger(__name__)
 
-DEFAULT_METHOD = "GET"
 DEFAULT_NAME = "ustvgo"
 DEFAULT_VERIFY_SSL = True
 DEFAULT_FORCE_UPDATE = False
-DEFAULT_TIMEOUT = 10
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
+DEFAULT_SCAN_INTERVAL = timedelta(seconds=3600)
 
 
-CONF_ATTR = "attribute"
-CONF_SELECT = "select"
-CONF_INDEX = "index"
-
-
-METHODS = ["POST", "GET", "PUT"]
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -54,9 +40,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 
 SENSOR_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_SELECT): cv.template,
-        vol.Optional(CONF_ATTR): cv.string,
-        vol.Optional(CONF_INDEX, default=0): cv.positive_int,
         vol.Required(CONF_NAME): cv.string,
     }
 )
@@ -158,8 +141,6 @@ class UstvgoSensor(Entity):
     @property
     def state(self):
         """Return the state of the device."""
-       # _LOGGER.error("state -info: %s",self._coordinator.data)
-       # _LOGGER.error("state -_key: %s",self._key)
         if self._coordinator.data[self._key] is None:
             return "Unavilable"
         return self._coordinator.data[self._key]['name']
