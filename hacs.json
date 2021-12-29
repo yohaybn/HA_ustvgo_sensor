@@ -1,0 +1,9 @@
+{
+  "name": "ustvgo sensor",
+  "render_readme": true,
+    "domains": [
+		"sensor"
+    ],
+  "homeassistant": "2021.10.0",
+  "iot_class": "Cloud Polling"
+}
