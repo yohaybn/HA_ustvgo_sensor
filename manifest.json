@@ -1,0 +1,9 @@
+{
+    "domain": "ustvgo",
+    "name": "UsTvGo",
+    "documentation": "https://github.com/yohaybn/HA_ustvgo_sensor",
+    "requirements": ["requests"],
+    "codeowners": ["@yohaybn"],
+    "version": "0.0.1"
+  }
+  
