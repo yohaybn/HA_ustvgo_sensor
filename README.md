@@ -7,7 +7,7 @@ This component will create senosr for every channel from UStvgo
 
 ------------
 ## instaltion:
-Copy [ustvgo folder](https://github.com/yohaybn/HA_ustvgo_sensor/tree/main/custom%20component/ustvgo ) to your custom component folder and restart your HA.  
+Copy [ustvgo folder](https://github.com/yohaybn/HA_ustvgo_sensor/tree/main/custom-components/ustvgo ) to your custom component folder and restart your HA.  
 add sensor to your configuration.yaml
 <pre><code>-  sensor:
 	- platform: ustvgo
