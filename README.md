@@ -54,15 +54,16 @@ cards:
 </code></pre>
 **Script:**
 <pre><code>
-cast_ustvgo:
+'cast_ustvgo':
   sequence:
-  - service: media_player.play_media
-	data_template:
-		media_content_id: >-
-			{{ state_attr(sensor, 'm3u') }}
-			media_content_type: media
-		target:
-			entity_id: "{{states('input_select.media_players')}}"
+    - service: media_player.play_media
+      data_template:
+        media_content_id: >-
+          {{ state_attr(sensor, 'm3u') }}
+        media_content_type: media
+      target:
+        entity_id: "{{states('input_select.media_players')}}"
+
 </code></pre>
 
 and create <code>input_select</code> with all your Chromecast devices
