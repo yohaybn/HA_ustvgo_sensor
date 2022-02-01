@@ -37,26 +37,21 @@ DEFAULT_FORCE_UPDATE = False
 DEFAULT_TIMEOUT = 10
 DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
 
+CONF_HIDE_VPN= "hide_vpn_required"
 
-CONF_ATTR = "attribute"
-CONF_SELECT = "select"
-CONF_INDEX = "index"
-
-
-METHODS = ["POST", "GET", "PUT"]
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.time_period
+        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): cv.time_period,
+        
+        vol.Optional(CONF_HIDE_VPN, default=True): cv.boolean,
+        
     }
 )
 
 SENSOR_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_SELECT): cv.template,
-        vol.Optional(CONF_ATTR): cv.string,
-        vol.Optional(CONF_INDEX, default=0): cv.positive_int,
         vol.Required(CONF_NAME): cv.string,
     }
 )
@@ -68,6 +63,10 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     scan_interval = config.get(CONF_SCAN_INTERVAL)
     session = async_get_clientsession(hass)
     values = {}
+    novpn_sample=''
+    vpn_sample=''
+
+        
     async def async_update_data():
         """Fetch data from API endpoint.
         This is the place to pre-process the data to lookup tables
@@ -75,27 +74,45 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         """       
         counter=0
         try:
-            async with async_timeout.timeout(1000):
-                with open('/config/custom_components/ustvgo/ustvgo_channel_info.txt') as file:
-                    for line in file:
+            async with async_timeout.timeout(100):
+                headers = {'Referer':'https://ustvgo.tv/'}
+                async with session.get('https://ustvgo.tv/player.php?stream=ABC', headers=headers) as response:
+                    src= await response.text()
+                    novpn_sample = src.split("hls_src='")[1].split("'")[0]
+
+                async with session.get('https://ustvgo.tv/player.php?stream=BET', headers=headers) as response:
+                    src= await response.text()
+                    if '.m3u8' in src:
+                        vpn_sample = src.split("hls_src='")[1].split("'")[0]
+                    else:
+                        vpn_sample = 'https://raw.githubusercontent.com/benmoose39/YouTube_to_m3u/main/assets/moose_na.m3u'
+                async with session.get('https://raw.githubusercontent.com/benmoose39/ustvgo_to_m3u/main/ustvgo_channel_info.txt') as response:
+                    file = await response.text()
+                    for line in file.splitlines():
                         line = line.strip()
                         if not line or line.startswith('~~'):
-                            continue
+                            continue 
                         line = line.split('|')
                         name = line[0].strip()
                         code = line[1].strip()
                         logo = line[2].strip()
+                        is_vpn = line[-1].strip() == 'VPN'
+                        if is_vpn:
+                            m3u = vpn_sample.replace('BET', code)
+                        else:
+                            m3u = novpn_sample.replace('ABC', code)
                         _ent={}
-                        data = {'stream': code}
-                    
-                        async with session.post('https://ustvgo.tv/data.php', data=data) as response:
-                            m3u = await response.text()
-                            _ent["m3u"] = m3u
-                            _ent["tvg-id"] = code
-                            _ent["tvg-logo"] = logo
-                            _ent["name"] = f"ustvgo_{name}"
+                        _ent["m3u"] = m3u
+                        _ent["tvg-id"] = code
+                        _ent["tvg-logo"] = logo
+                        _ent["name"] = name
+                        _ent["is-vpn-required"] = is_vpn
+                        if config.get(CONF_HIDE_VPN):
+                            if not is_vpn:
+                                values[name]= _ent
+                        else:
                             values[name]= _ent
-                            _LOGGER.info("collecting sensor: %s",name)
+                        
             return values
         except Exception:
             raise UpdateFailed
