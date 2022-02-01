@@ -17,6 +17,7 @@ add sensor to your configuration.yaml
 	- platform: ustvgo
 	  name: ustvgo
 	  scan_interval: 3600
+	  hide_vpn_required: true # optional- default true
 </code></pre>
 this will create sensor for each channel from UStvgo
 ## Create Lovelace card
