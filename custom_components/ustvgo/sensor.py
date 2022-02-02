@@ -105,7 +105,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                         _ent["m3u"] = m3u
                         _ent["tvg-id"] = code
                         _ent["tvg-logo"] = logo
-                        _ent["name"] = name
+                        _ent["name"] = f"ustvgo_{name}"
                         _ent["is-vpn-required"] = is_vpn
                         if config.get(CONF_HIDE_VPN):
                             if not is_vpn:
